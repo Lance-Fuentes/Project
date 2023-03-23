@@ -1,3 +1,17 @@
+<?php
+
+/*******w******** 
+    
+    Name: Lance Fuentes
+    Date: January 28, 2023
+    Description: The process to create, update, or delete a post in the database.
+
+****************/
+
+session_start();
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
