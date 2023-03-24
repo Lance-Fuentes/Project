@@ -3,8 +3,8 @@
 /*******w******** 
     
     Name: Lance Fuentes
-    Date: January 28, 2023
-    Description: The process to create, update, or delete a post in the database.
+    Date: March 20, 2023
+    Description: The authentication for serverside database.
 
 ****************/
 

@@ -1,34 +1,109 @@
  <?php
 
-/*******w******** 
+/*******w********
     
     Name: Lance Fuentes
-    Date: January 28, 2023
-    Description: The process to create, update, or delete a post in the database.
+    Date: March 20, 2023
+    Description: Sign in to a user account.
 
 ****************/
 
 require('connect.php');
+session_start();
 
+$logged = false;
 
-$username;
-$password;
-
-define('USER_LOGIN', $username);
-
-define('USER_PASSWORD', $password);
-
-if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])
-
-    || ($_SERVER['PHP_AUTH_USER'] != MASTER_LOGIN)
-
-    || ($_SERVER['PHP_AUTH_PW'] != MASTER_PASSWORD)) {
-
-header('HTTP/1.1 401 Unauthorized');
-
-header('WWW-Authenticate: Basic realm="Our Blog"');
-
-exit("Access Denied: Username and password invalid.");
-
+if(isset($_SESSION['user_id'])){
+    header('location: index.php');
 }
+
+if(isset($_POST['userCommand'])){
+    $_SESSION['formlog_user'] = $_POST['username'];
+    $_SESSION['formlog_pass'] = $_POST['password'];
+}
+
+$errors = [];
+
+if (isset($_POST['userCommand']) && isset($_POST['username']) && isset($_POST['password']) && $_POST['userCommand'] == "Sign In" 
+    && !empty($_POST['username'])  && !empty($_POST['password'])) {
+
+    $userName = trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS));
+    $password = trim(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS));
+
+    $query = 'SELECT * FROM users WHERE user_name = :userName';
+    $statement = $db->prepare($query);
+    $statement->bindValue(":userName", $userName);
+    $statement->execute(); 
+
+    if($statement->rowCount() > 0){
+        $row = $statement->fetch();
+        if(password_verify($password, $row['password'])){
+			$_SESSION = $row;
+            header('location: login_success.php');
+        }
+        else{
+            $errors[] = 'Incorrect password';
+        }
+    }
+    else{
+        $errors[] = "Invalid username";
+    }
+}
+else{
+    $errors[] = 'Enter your username and password';
+}
+
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
+		<input type="text" id="search-bar" placeholder="Search for products">
+		<div id="user-links">
+			<a href="user_login.php">Sign In</a>
+			<a href="#">Purchases</a>
+			<a href="#">Cart</a>
+		</div>
+	</header>
+
+    <ul>
+        <li><a class="nav" href="index.php">Home</a></li>
+        <li><a class="nav" href="#men">Men</a></li>
+        <li><a class="nav" href="#women">Women</a></li>
+        <li><a class="nav" href="#news">Kids</a></li>
+        <li><a class="nav" href="#about">About</a></li>
+    </ul>
+
+    <div id="user-signin">
+        <h1>Sign In</h1>
+
+        <?php if(!empty($errors)) :?>
+            <?php foreach($errors as $error) :?>
+                <p class="error"><?= $error ?></p>
+            <?php endforeach ?>
+        <?php endif ?>
+
+        <form action=<?=$_SERVER["PHP_SELF"]?> method="post">
+            <input type="text" name="username" id="username" placeholder="Username" value=<?= (isset($_SESSION['formlog_user']) ? $_SESSION['formlog_user'] : '')?>>
+
+            <input type="text" name="password" id="password" placeholder="Password" value=<?= (isset($_SESSION['formlog_pass']) ? $_SESSION['formlog_pass'] : '')?>>
+
+            <input type="submit" name="userCommand" class="btn_log" value="Sign In">
+        </form>
+    </div>
+
+    <div id="account-signup">
+        <strong>New To Happy Pink</strong>
+        <a href="user_create.php">Create An Account</a>
+    </div>
+</body>
+</html>

@@ -1,16 +1,17 @@
-<?php
+ <?php
 
-/*******w******** 
+/*******w********
     
     Name: Lance Fuentes
     Date: March 20, 2023
-    Description: The main page of Happy Pink website.
+    Description: Successful login page.
 
 ****************/
 
 session_start();
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +19,7 @@ session_start();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
-    <title>Happy Pink</title>
+    <title>Document</title>
 </head>
 <body>
     <header>
@@ -46,17 +47,10 @@ session_start();
         <li><a class="nav" href="#about">About</a></li>
     </ul>
 
-    <?php if(!isset($_SESSION['user_id'])) :?>
-    <div id="account-signin">
-        <strong>Shop and customize the products you love</strong>
-        <a href="user_login.php">Sign In or Create An Account</a>
+    <div id="success_message">
+        <strong>Log In Successful!</strong>
+        <a href="index.php">Home Page</a>
     </div>
-    <?php endif ?>
 
-    <div id="home-content">
-        <img src="images/happy_pink/model1.png" alt="Brown jacket model">
-        <img src="images/happy_pink/model2.png" alt="White shirt model">
-
-    </div>
 </body>
 </html>

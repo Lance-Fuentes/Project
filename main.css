@@ -1,0 +1,207 @@
+/*******w******** 
+    
+    Name: Lance Fuentes
+    Date: March 23, 2023
+    Description: CSS Styling.
+
+****************/
+
+/* For index.php */
+
+body {
+    background-color: #EFE7DD;
+    margin: 0 200px;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #EFE7DD;
+    padding: 10px;
+}
+
+header h1{
+    color: #9B4922;
+}
+
+#search-bar {
+    background-color: #EFE7DD;
+    margin: 0 200px;
+    padding: 5px;
+    border: 1px groove black;
+    font-size: 18px;    
+    outline: none;
+    flex-grow: 1;
+    color: #9B4922;
+}
+
+#user-links {
+    display: flex;
+    align-items: center;
+}
+
+#user-links a {
+    margin: 0 10px;
+    color: #9B4922;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+ul {
+    list-style-type: none;
+    margin-bottom: 50px;
+    padding: 0;
+    overflow: hidden;
+    background-color: #764B36;
+    text-align: center;
+  }
+  
+  li {
+    display: inline-block;
+  }
+  
+  .nav {
+    display: block;
+    color: #EFE7DD;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 20px;
+  }
+  
+  .nav:hover {
+    text-decoration: underline;
+    text-underline-offset: 8px;
+  }
+
+  #account-signin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  #account-signin strong {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #764B36;
+  }
+  
+  #account-signin a {
+    font-size: 18px;
+    margin-bottom: 50px;
+    color: #9B4922;
+  }
+
+/* For user_login.php */
+
+#user-signin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#user-signin h1 {
+    color: #764B36;
+}
+  
+#user-signin form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+#user-signin input {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#account-signup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+  
+#account-signup strong {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #764B36;
+}
+  
+#account-signup a {
+    font-size: 18px;
+    margin-bottom: 50px;
+    color: #9B4922;
+}
+
+/* For login_success.php */
+
+#success_message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#success_message strong {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #764B36;
+}
+  
+#success_message a {
+    font-size: 18px;
+    margin-bottom: 50px;
+    color: #9B4922;
+}
+
+/* For user_create.php */
+
+#user-signup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#user-signup h1 {
+    color: #764B36;
+}
+  
+#user-signup form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+#user-signup input {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.error{
+    color: #e30008;
+}
+
+.btn_log {
+    color: #EFE7DD;;
+    background-color: #764B36;
+}
+
+.btn_log:hover{
+    background-color: #9B4922;
+}
