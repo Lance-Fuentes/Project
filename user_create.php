@@ -90,6 +90,10 @@ if(isset($_POST['userCommand'])){
     if(!isset($_POST['confirm-password']) || empty($_POST['confirm-password']) || strlen($_POST['confirm-password']) <= 4){
         $errors[] = 'Confirm Password can not be empty and has to match your Password.';
     }
+
+    if(!isset($_POST['email']) || empty($_POST['email']) || strlen($_POST['email']) > 80){
+        $errors[] = 'Email can not be empty and has to be 80 characters or less.';
+    }
 }
 
 
@@ -102,7 +106,7 @@ if(isset($_POST['userCommand'])){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
-    <title>Document</title>
+    <title>Happy Pink</title>
 </head>
 <body>
     <header>
@@ -115,8 +119,8 @@ if(isset($_POST['userCommand'])){
 		</div>
 	</header>
 
-    <ul>
-        <li><a class="nav" href="#home">Home</a></li>
+    <ul class="main-nav">
+        <li><a class="nav" href="index.php">Home</a></li>
         <li><a class="nav" href="#men">Men</a></li>
         <li><a class="nav" href="#women">Women</a></li>
         <li><a class="nav" href="#news">Kids</a></li>
@@ -140,9 +144,9 @@ if(isset($_POST['userCommand'])){
 
                 <input type="text" name="displayname" id="displayname" placeholder="Display Name" value=<?= (isset($_SESSION['form_display']) ? $_SESSION['form_display'] : '')?>>
 
-                <input type="text" name="password" id="password" placeholder="Password" value=<?= (isset($_SESSION['form_pass']) ? $_SESSION['form_pass'] : '')?>>
+                <input type="password" name="password" id="password" placeholder="Password" value=<?= (isset($_SESSION['form_pass']) ? $_SESSION['form_pass'] : '')?>>
 
-                <input type="text" name="confirm-password" id="confirm-password" placeholder="Confirm Password" value=<?= (isset($_SESSION['form_confirm']) ? $_SESSION['form_confirm'] : '')?>>
+                <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm Password" value=<?= (isset($_SESSION['form_confirm']) ? $_SESSION['form_confirm'] : '')?>>
 
                 <input type="submit" name="userCommand" class="btn_log" value="Sign Up">
             </form>

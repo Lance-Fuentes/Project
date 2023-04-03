@@ -1,16 +1,28 @@
 <?php
 
-/*******w******** 
+/*******w********
     
     Name: Lance Fuentes
-    Date: March 20, 2023
-    Description: The main page of Happy Pink website.
+    Date: March 24, 2023
+    Description: Manage users in the database.
 
 ****************/
 
+require('connect.php');
 session_start();
 
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 'Master'){
+    header('location: index.php');
+    exit();
+}
+
+$query = 'SELECT * FROM users ORDER BY user_id';
+$statement = $db->prepare($query);
+$statement->execute(); 
+
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +33,7 @@ session_start();
     <title>Happy Pink</title>
 </head>
 <body>
-    <header>
+<header>
 		<a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
 		<input type="text" id="search-bar" placeholder="Search for products">
 		<div id="user-links">
@@ -59,17 +71,36 @@ session_start();
     </div>
     <?php endif ?>
 
-    <?php if(!isset($_SESSION['user_id'])) :?>
-    <div id="account-signin">
-        <strong>Shop and customize the products you love</strong>
-        <a href="user_login.php">Sign In or Create An Account</a>
-    </div>
+    <h2><a href="manage_process.php?command=create">Create A New User</a></h2>
+
+    <?php if ($statement->rowCount() > 0) : ?>
+        <table class="dbs-table">
+            <tr>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>User ID</th>
+                <th>User Type</th>
+                <th>Display Name</th>
+                <th>Email</th>
+            </tr>
+
+            <?php while($row = $statement->fetch()) : ?>
+                <?php $userId = $row['user_id']; $userType = $row['user_type']; $displayName = $row['display_name']; $email = $row['email']; ?>
+                
+                <tr>
+                    <td><a href="manage_process.php?command=edit&userId=<?=$userId?>">Edit User</a></td>
+                    <td><a href="manage_process.php?command=delete&userId=<?=$userId?>" onclick="return confirm('Are you sure you wish to delete this user?')">Delete User</a></td>
+                    <td><?= $userId ?></td>
+                    <td><?= $userType ?></td>
+                    <td><?= $displayName ?></td>
+                    <td><?= $email ?></td>
+                </tr>
+            <?php endwhile ?>
+        </table>
+    <?php endif ?>
+    <?php if(isset($_GET['deleted'])) : ?>
+        <h2><?= $_GET['deleted'] ?></h2>
     <?php endif ?>
 
-    <div id="home-content">
-        <img src="images/happy_pink/model1.png" alt="Brown jacket model">
-        <img src="images/happy_pink/model2.png" alt="White shirt model">
-
-    </div>
 </body>
 </html>

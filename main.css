@@ -48,54 +48,77 @@ header h1{
     font-size: 18px;
 }
 
-ul {
+.main-nav {
     list-style-type: none;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
     padding: 0;
     overflow: hidden;
     background-color: #764B36;
     text-align: center;
-  }
-  
-  li {
+}
+
+li {
     display: inline-block;
-  }
+}
   
-  .nav {
+.nav {
     display: block;
     color: #EFE7DD;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
     font-size: 20px;
-  }
+}
   
-  .nav:hover {
+.nav:hover {
     text-decoration: underline;
     text-underline-offset: 8px;
-  }
+}
 
-  #account-signin {
+#authorized_menu {
+    list-style-type: none;
+    text-align: center;
+}
+
+#authorized_menu li{
+    display: inline-block;
+}
+
+#authorized_menu a{
+    display: block;
+    color:#9B4922;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+#authorized_menu a:hover{
+    text-decoration: underline;
+    text-underline-offset: 8px;
+}
+
+#account-signin {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-  }
+}
   
-  #account-signin strong {
+#account-signin strong {
     display: block;
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
     color: #764B36;
-  }
+}
   
-  #account-signin a {
+#account-signin a {
     font-size: 18px;
     margin-bottom: 50px;
     color: #9B4922;
-  }
+}
 
 /* For user_login.php */
 
@@ -204,4 +227,77 @@ ul {
 
 .btn_log:hover{
     background-color: #9B4922;
+}
+
+/* For manage_user */
+
+.dbs-table{
+    margin: 0 auto;
+    border: 1px groove black;
+}
+
+.dbs-table th{
+    border-bottom: 1px groove black;
+}
+
+.dbs-table th, td{
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+h2{
+    margin: 0 auto;
+}
+
+/* For manage_process edit */
+.edit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.edit h2 {
+    color: #764B36;
+    margin-bottom: 10px;
+}
+  
+.edit form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+.edit input {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.edit select {
+    margin-bottom: 10px;
+}
+
+/* For manage_user */
+
+.dbs-table td a, h2 a {
+    display: block;
+    color: #9B4922;
+    text-align: center;
+    text-decoration: none;
+}
+
+h2 a {
+    margin-bottom: 20px;
+}
+
+.dbs-table td a:hover, h2 a:hover {
+    text-decoration: underline;
+}
+
+h2 {
+    display: block;
+    color: #e30008;
+    text-align: center;
+    margin-top: 10px;
 }

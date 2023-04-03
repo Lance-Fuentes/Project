@@ -49,7 +49,7 @@ if (isset($_POST['userCommand']) && isset($_POST['username']) && isset($_POST['p
         $errors[] = "Invalid username";
     }
 }
-else{
+else if(isset($_POST['userCommand'])){
     $errors[] = 'Enter your username and password';
 }
 
@@ -62,7 +62,7 @@ else{
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
-    <title>Document</title>
+    <title>Happy Pink</title>
 </head>
 <body>
     <header>
@@ -75,7 +75,7 @@ else{
 		</div>
 	</header>
 
-    <ul>
+    <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
         <li><a class="nav" href="#men">Men</a></li>
         <li><a class="nav" href="#women">Women</a></li>
@@ -95,7 +95,7 @@ else{
         <form action=<?=$_SERVER["PHP_SELF"]?> method="post">
             <input type="text" name="username" id="username" placeholder="Username" value=<?= (isset($_SESSION['formlog_user']) ? $_SESSION['formlog_user'] : '')?>>
 
-            <input type="text" name="password" id="password" placeholder="Password" value=<?= (isset($_SESSION['formlog_pass']) ? $_SESSION['formlog_pass'] : '')?>>
+            <input type="password" name="password" id="password" placeholder="Password" value=<?= (isset($_SESSION['formlog_pass']) ? $_SESSION['formlog_pass'] : '')?>>
 
             <input type="submit" name="userCommand" class="btn_log" value="Sign In">
         </form>

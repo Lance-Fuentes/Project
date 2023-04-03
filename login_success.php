@@ -19,7 +19,7 @@ session_start();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
-    <title>Document</title>
+    <title>Happy Pink</title>
 </head>
 <body>
     <header>
@@ -39,7 +39,7 @@ session_start();
 		</div>
 	</header>
 
-    <ul>
+    <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
         <li><a class="nav" href="#men">Men</a></li>
         <li><a class="nav" href="#women">Women</a></li>
