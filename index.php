@@ -8,7 +8,84 @@
 
 ****************/
 
+require('connect.php');
 session_start();
+
+if(isset($_GET['category']) && $_GET['category'] == 'men'){
+    $query = 'SELECT * FROM products WHERE category = "men" ORDER BY cloth_id';
+    $statement = $db->prepare($query);
+    $statement->execute(); 
+}
+
+function file_upload_path($original_filename) {
+    $category = $_POST['category'];
+    $upload_subfolder_name = "images/happy_pink/$category";
+    $current_folder = dirname(__FILE__);
+    
+    $path_segments = [$current_folder, $upload_subfolder_name, basename($original_filename)];
+    
+    return join(DIRECTORY_SEPARATOR, $path_segments);
+ }
+
+ function file_is_an_image($temporary_path, $new_path) {
+     $allowed_mime_types      = ['image/gif', 'image/jpeg', 'image/png'];
+     $allowed_file_extensions = ['gif', 'jpg', 'jpeg', 'png'];
+     
+     $actual_file_extension   = pathinfo($new_path, PATHINFO_EXTENSION);
+     $actual_mime_type        = getimagesize($temporary_path)['mime'];
+     
+     $file_extension_is_valid = in_array($actual_file_extension, $allowed_file_extensions);
+     $mime_type_is_valid      = in_array($actual_mime_type, $allowed_mime_types);
+     
+     return $file_extension_is_valid && $mime_type_is_valid;
+ }
+ 
+ $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
+ $upload_error_detected = isset($_FILES['image']) && ($_FILES['image']['error'] > 0);
+
+ if ($image_upload_detected) { 
+     $image_filename        = $_FILES['image']['name'];
+     $temporary_image_path  = $_FILES['image']['tmp_name'];
+     $new_image_path        = file_upload_path($image_filename);
+     if (file_is_an_image($temporary_image_path, $new_image_path)) {
+        if(isset($_POST['cloth_type']) && isset($_POST['price']) && isset($_POST['category'])){
+            $clothType = filter_input(INPUT_POST, 'cloth_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $price = filter_input(INPUT_POST, 'price', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $color = filter_input(INPUT_POST, 'color', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+
+            $checkQuery = 'SELECT * FROM products WHERE product_name = :productName';
+            $checkStatement = $db->prepare($checkQuery);
+            $checkStatement->bindValue(":productName", $image_filename);
+            $checkStatement->execute(); 
+
+            if($checkStatement->rowCount() == 0){
+                $query = "INSERT INTO products (product_name, cloth_type, description, color, price, category) VALUES (:product_name, :cloth_type, :description, :color, :price, :category)";
+                $statement = $db->prepare(($query));
+                
+                $statement->bindValue(":product_name", $image_filename);
+                $statement->bindValue(":cloth_type", $clothType);
+                $statement->bindValue(":description", $description);
+                $statement->bindValue(":color", $color);
+                $statement->bindValue(":price", $price);
+                $statement->bindValue(":category", $category);
+
+                $statement->execute();
+
+                move_uploaded_file($temporary_image_path, $new_image_path);
+
+                header("Location:index.php?category=men");
+            }
+            else{
+                echo 'File Name Exists';
+            }
+            
+        }
+         
+     }
+ }
 
 ?>
 <!DOCTYPE html>
@@ -40,10 +117,11 @@ session_start();
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="#men">Men</a></li>
-        <li><a class="nav" href="#women">Women</a></li>
-        <li><a class="nav" href="#news">Kids</a></li>
-        <li><a class="nav" href="#about">About</a></li>
+        <li><a class="nav" href="index.php?category=men">Men</a></li>
+        <li><a class="nav" href="index.php?category=women">Women</a></li>
+        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
+        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
     <?php if(isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 'Master' || $_SESSION['user_type'] == 'Admin')) :?>
@@ -66,10 +144,60 @@ session_start();
     </div>
     <?php endif ?>
 
-    <div id="home-content">
-        <img src="images/happy_pink/model1.png" alt="Brown jacket model">
-        <img src="images/happy_pink/model2.png" alt="White shirt model">
+    <?php if(!isset($_GET['category'])) : ?>
+        <div id="home-content">
+            <img src="images/happy_pink/model1.png" alt="Brown jacket model">
+            <img src="images/happy_pink/model2.png" alt="White shirt model">
+        </div>
+    <?php endif ?>
 
-    </div>
+    <?php if(isset($_GET['category']) && $_GET['category'] == 'men') : ?>
+
+        <?php if(isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 'Master' || $_SESSION['user_type'] == 'Admin')) :?>
+            <div id="add-product">
+                <form method='post' enctype='multipart/form-data'>
+                    <h3>Add New Product</h3>
+                    <label for='image'>Upload Image:</label>
+                    <input type='file' name='image' id='image'>
+                    <?php if ($upload_error_detected): ?>
+                    <p style="color: red;">Error occured while uploading image; Please make sure you are uploading correctly.</p>
+                    <?php endif ?>
+                    <label for="category">Category:</label>
+                        <select name="category">
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="kids">kids</option>
+                            <option value="custom">custom</option>
+                        </select>
+                    <input type="text" name="cloth_type" placeholder="Clothing Type">
+                    <input type="text" name="color" placeholder="Product Color">
+                    <input type="number" min="0" step="0.01" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" name="price" placeholder="Product Price">
+                    <textarea rows="5" cols="40" name="description" spellcheck="true" placeholder="Description"></textarea>
+                    <input type='submit' name='submit' value='Upload Product'>
+                </form>
+            </div>
+        <?php endif ?>
+
+        <div class="category-content">
+        <?php while($row = $statement->fetch()) : ?>
+                <?php $productName = $row['product_name']; $cloth_type = $row['cloth_type']; $description= $row['description']; $color = $row['color'];
+                    $price = $row['price']; $category = $row['category']; ?>
+
+                <div class="product">
+                    <h1><?= substr($productName, 0, strpos($productName, '.')) ?></h1>
+                    <img src="images/happy_pink/men/<?=$productName?>" alt="<?=$productName?>">
+                    <div id="details">
+                        <p>Price: $<?=$price?></p>
+                        <p>Color: <?=$color?></p>
+                        <p><a href="product_edit.php?category=men&product_id=<?=$row['cloth_id']?>">Edit</a></p>
+                        <p><a href="product_edit.php?command=delete&category=<?=$category?>&product_id=<?=$row['cloth_id']?>" onclick="return confirm('Are you sure you wish to delete this user?')">Delete Product</a></p>
+                    </div>
+                    <p><a href="#">Add to Cart</a></p>
+                    <p>Details:</p>
+                    <p style="margin: 5px 0px 0px 40px;"><?=$description?>...</p>
+                </div>
+        <?php endwhile ?>
+        </div>
+    <?php endif ?>
 </body>
 </html>

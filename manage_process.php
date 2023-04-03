@@ -199,10 +199,11 @@ if (isset($_GET['command']) && $_GET['command'] == 'delete' && isset($_GET['user
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="#men">Men</a></li>
-        <li><a class="nav" href="#women">Women</a></li>
-        <li><a class="nav" href="#news">Kids</a></li>
-        <li><a class="nav" href="#about">About</a></li>
+        <li><a class="nav" href="index.php?category=men">Men</a></li>
+        <li><a class="nav" href="index.php?category=women">Women</a></li>
+        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
+        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
     <?php if (isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 'Master' || $_SESSION['user_type'] == 'Admin')) : ?>
@@ -312,10 +313,6 @@ if (isset($_GET['command']) && $_GET['command'] == 'delete' && isset($_GET['user
                         <input type="submit" class="btn_log" value="Done"/>  
                     </a>
                 </div>
-    <?php endif ?>
-
-    <?php if ($_GET['command'] == 'delete') : ?>
-
     <?php endif ?>
 </body>
 

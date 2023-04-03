@@ -52,10 +52,11 @@ $statement->execute();
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="#men">Men</a></li>
-        <li><a class="nav" href="#women">Women</a></li>
-        <li><a class="nav" href="#news">Kids</a></li>
-        <li><a class="nav" href="#about">About</a></li>
+        <li><a class="nav" href="index.php?category=men">Men</a></li>
+        <li><a class="nav" href="index.php?category=women">Women</a></li>
+        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
+        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
     <?php if(isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 'Master' || $_SESSION['user_type'] == 'Admin')) :?>
