@@ -1,18 +1,27 @@
- <?php
+<?php
 
 /*******w********
     
     Name: Lance Fuentes
-    Date: March 20, 2023
-    Description: Successful login page.
+    Date: April 5, 2023
+    Description: Manage category navigation in the database.
 
 ****************/
 
 require('connect.php');
 session_start();
+
+if(!isset($_SESSION['user_type']) && ($_SESSION['user_type'] != 'Master' || $_SESSION['user_type'] != 'Admin')){
+    header('location: index.php');
+    exit();
+}
+
 $queryCat = 'SELECT * FROM categories';
 $statementCat = $db->prepare($queryCat);
 $statementCat->execute(); 
+
+
+
 
 ?>
 
@@ -26,7 +35,7 @@ $statementCat->execute();
     <title>Happy Pink</title>
 </head>
 <body>
-    <header>
+<header>
 		<a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
 		<input type="text" id="search-bar" placeholder="Search for products">
 		<div id="user-links">
@@ -65,9 +74,34 @@ $statementCat->execute();
     </div>
     <?php endif ?>
 
-    <div id="success_message">
-        <strong>Log In Successful!</strong>
-        <a href="index.php">Home Page</a>
-    </div>
+    <h2><a href="admin_nav_process.php?command=create">Create A New Category</a></h2>
+
+    <?php $statementCat->execute(); if ($statementCat->rowCount() > 0) : ?>
+        <table class="dbs-table">
+            <tr>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>Category ID</th>
+                <th>Name</th>
+                <th>Display Name</th>
+            </tr>
+
+            <?php while($row = $statementCat->fetch()) : ?>
+            <?php $id = $row['id']; $displayName = $row['display_name']; $name = $row['name']; ?>
+                
+                <tr>
+                    <td><a href="admin_nav_process.php?command=edit&id=<?=$id?>">Edit Category</a></td>
+                    <td><a href="admin_nav_process.php?command=delete&id=<?=$id?>" onclick="return confirm('Are you sure you wish to delete this category?')">Delete Category</a></td>
+                    <td><?= $id ?></td>
+                    <td><?= $name ?></td>
+                    <td><?= $displayName ?></td>
+                </tr>
+            <?php endwhile ?>
+        </table>
+    <?php endif ?>
+    <?php if(isset($_GET['deleted'])) : ?>
+        <h2><?= $_GET['deleted'] ?></h2>
+    <?php endif ?>
+
 </body>
 </html>

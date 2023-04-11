@@ -10,6 +10,14 @@
 
 require('connect.php');
 session_start();
+use \Gumlet\ImageResize;
+use \Gumlet\ImageResizeException;
+include '\xampp\htdocs\wd2\Project\ImageResize.php';
+include '\xampp\htdocs\wd2\Project\ImageResizeException.php';
+
+$queryCat = 'SELECT * FROM categories';
+$statementCat = $db->prepare($queryCat);
+$statementCat->execute(); 
 
 if(isset($_GET['category']) && $_GET['category'] == 'men'){
     $query = 'SELECT * FROM products WHERE category = "men" ORDER BY cloth_id';
@@ -18,8 +26,7 @@ if(isset($_GET['category']) && $_GET['category'] == 'men'){
 }
 
 function file_upload_path($original_filename) {
-    $category = $_POST['category'];
-    $upload_subfolder_name = "images/happy_pink/$category";
+    $upload_subfolder_name = "images/happy_pink";
     $current_folder = dirname(__FILE__);
     
     $path_segments = [$current_folder, $upload_subfolder_name, basename($original_filename)];
@@ -61,7 +68,7 @@ function file_upload_path($original_filename) {
             $checkStatement->bindValue(":productName", $image_filename);
             $checkStatement->execute(); 
 
-            if($checkStatement->rowCount() == 0){
+            if($checkStatement->rowCount() === 0){
                 $query = "INSERT INTO products (product_name, cloth_type, description, color, price, category) VALUES (:product_name, :cloth_type, :description, :color, :price, :category)";
                 $statement = $db->prepare(($query));
                 
@@ -75,15 +82,16 @@ function file_upload_path($original_filename) {
                 $statement->execute();
 
                 move_uploaded_file($temporary_image_path, $new_image_path);
+                $image = new ImageResize($new_image_path);
+                $image->resizeToBestFit(600, 600);
+                $image->save($new_image_path);
 
-                header("Location:index.php?category=men");
+                header("Location:index.php?category=$category");
             }
             else{
-                echo 'File Name Exists';
+                $exists = true;
             }
-            
-        }
-         
+        } 
      }
  }
 
@@ -100,7 +108,10 @@ function file_upload_path($original_filename) {
 <body>
     <header>
 		<a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
-		<input type="text" id="search-bar" placeholder="Search for products">
+        <form id="search-form" action="search.php" method="post">
+            <input type="text" id="search-bar" placeholder="Search for products">
+        </form>
+		
 		<div id="user-links">
 
             <?php if(isset($_SESSION['user_id'])) :?>
@@ -114,13 +125,13 @@ function file_upload_path($original_filename) {
 			<a href="#">Cart</a>
 		</div>
 	</header>
-
+    
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="index.php?category=men">Men</a></li>
-        <li><a class="nav" href="index.php?category=women">Women</a></li>
-        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
-        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <?php while($row = $statementCat->fetch()) : ?>
+        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+            <li><a class="nav" href="index.php?category=<?=$name?>"><?=$display_name?></a></li>
+        <?php endwhile ?>
         <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
@@ -130,7 +141,7 @@ function file_upload_path($original_filename) {
             <?php if($_SESSION['user_type'] == 'Master') : ?>
                 <li><a href="manage_user.php">Users</a></li> 
             <?php endif?>
-            <li><a href="#">Edit Navigation</a></li>
+            <li><a href="admin_nav.php">Edit Navigation</a></li>
             <li><a href="#">Upload Images</a></li>
             <li><a href="#">Moderate Reviews</a></li>
         </ul>
@@ -162,18 +173,21 @@ function file_upload_path($original_filename) {
                     <?php if ($upload_error_detected): ?>
                     <p style="color: red;">Error occured while uploading image; Please make sure you are uploading correctly.</p>
                     <?php endif ?>
+                    <?php if (isset($exists) && $exists): ?>
+                    <p style="color: red;">Image filename exists; Please upload a new image.</p>
+                    <?php endif ?>
                     <label for="category">Category:</label>
                         <select name="category">
-                            <option value="men">Men</option>
-                            <option value="women">Women</option>
-                            <option value="kids">kids</option>
-                            <option value="custom">custom</option>
+                            <?php $statementCat->execute(); while($row = $statementCat->fetch()) : ?>
+                            <?php $name = $row['name']; $display_name = $row['display_name'];?>
+                                <option value=<?=$name?>><?=$display_name?></option>
+                            <?php endwhile ?>
                         </select>
                     <input type="text" name="cloth_type" placeholder="Clothing Type">
                     <input type="text" name="color" placeholder="Product Color">
                     <input type="number" min="0" step="0.01" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" name="price" placeholder="Product Price">
                     <textarea rows="5" cols="40" name="description" spellcheck="true" placeholder="Description"></textarea>
-                    <input type='submit' name='submit' value='Upload Product'>
+                    <input type='submit' name='submit' value='Upload Product' class="btn_log">
                 </form>
             </div>
         <?php endif ?>
@@ -181,18 +195,27 @@ function file_upload_path($original_filename) {
         <div class="category-content">
         <?php while($row = $statement->fetch()) : ?>
                 <?php $productName = $row['product_name']; $cloth_type = $row['cloth_type']; $description= $row['description']; $color = $row['color'];
-                    $price = $row['price']; $category = $row['category']; ?>
+                    $price = $row['price']; $category = $row['category']; $clothId = $row['cloth_id']?>
 
                 <div class="product">
-                    <h1><?= substr($productName, 0, strpos($productName, '.')) ?></h1>
-                    <img src="images/happy_pink/men/<?=$productName?>" alt="<?=$productName?>">
+                    <a href="product_page.php?id=<?=$clothId?>">
+                        <h1><?= substr($productName, 0, strpos($productName, '.')) ?></h1>
+                        <img src="images/happy_pink/<?=$productName?>" alt="<?=$productName?>">
+                    </a>
                     <div id="details">
                         <p>Price: $<?=$price?></p>
                         <p>Color: <?=$color?></p>
-                        <p><a href="product_edit.php?category=men&product_id=<?=$row['cloth_id']?>">Edit</a></p>
-                        <p><a href="product_edit.php?command=delete&category=<?=$category?>&product_id=<?=$row['cloth_id']?>" onclick="return confirm('Are you sure you wish to delete this user?')">Delete Product</a></p>
+                        <p>Clothing Type: <?=$cloth_type?></p>
                     </div>
-                    <p><a href="#">Add to Cart</a></p>
+                    <div class="cart-btn">
+                        <a href="#">
+                            <input type="submit" class="btn_log" value="Add To Cart"/>  
+                        </a>
+                    </div>
+                    <div class="product-cud">
+                        <p><a href="product_edit.php?category=men&product_id=<?=$row['cloth_id']?>">Edit</a></p>
+                        <p><a href="product_edit.php?command=delete&category=<?=$category?>&product_id=<?=$row['cloth_id']?>" onclick="return confirm('Are you sure you wish to delete this post?')">Delete Product</a></p>
+                    </div>
                     <p>Details:</p>
                     <p style="margin: 5px 0px 0px 40px;"><?=$description?>...</p>
                 </div>

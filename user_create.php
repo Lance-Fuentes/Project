@@ -11,6 +11,15 @@
 require('connect.php');
 session_start();
 
+if(isset($_SESSION['user_id'])){
+    header('location: index.php');
+    exit();
+}
+
+$queryCat = 'SELECT * FROM categories';
+$statementCat = $db->prepare($queryCat);
+$statementCat->execute(); 
+
 if(isset($_POST['userCommand'])){
     $_SESSION['form_user'] = $_POST['username'];
     $_SESSION['form_display'] = $_POST['displayname'];
@@ -121,10 +130,10 @@ if(isset($_POST['userCommand'])){
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="index.php?category=men">Men</a></li>
-        <li><a class="nav" href="index.php?category=women">Women</a></li>
-        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
-        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <?php while($row = $statementCat->fetch()) : ?>
+        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+            <li><a class="nav" href="index.php?category=<?=$name?>"><?=$display_name?></a></li>
+        <?php endwhile ?>
         <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
@@ -153,7 +162,7 @@ if(isset($_POST['userCommand'])){
             </form>
         </div>
     <?php else :?>
-        <div id="account-signin">
+        <div id="created">
             <strong>Account Created!</strong>
             <a href="user_login.php">Sign in to your Account</a>
         </div>

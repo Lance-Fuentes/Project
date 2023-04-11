@@ -11,6 +11,10 @@
 require('connect.php');
 session_start();
 
+$queryCat = 'SELECT * FROM categories';
+$statementCat = $db->prepare($queryCat);
+$statementCat->execute(); 
+
 if(!isset($_SESSION['user_type']) && ($_SESSION['user_type'] != 'Master' || $_SESSION['user_type'] != 'Admin')){
     header('location: index.php');
     exit();
@@ -87,10 +91,10 @@ if(isset($_GET['command']) && isset($_GET['product_id']) && $_GET['command'] == 
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="index.php?category=men">Men</a></li>
-        <li><a class="nav" href="index.php?category=women">Women</a></li>
-        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
-        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <?php while($row = $statementCat->fetch()) : ?>
+        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+            <li><a class="nav" href="index.php?category=<?=$name?>"><?=$display_name?></a></li>
+        <?php endwhile ?>
         <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
@@ -100,7 +104,7 @@ if(isset($_GET['command']) && isset($_GET['product_id']) && $_GET['command'] == 
             <?php if($_SESSION['user_type'] == 'Master') : ?>
                 <li><a href="manage_user.php">Users</a></li> 
             <?php endif?>
-            <li><a href="#">Edit Navigation</a></li>
+            <li><a href="admin_nav.php">Edit Navigation</a></li>
             <li><a href="#">Upload Images</a></li>
             <li><a href="#">Moderate Reviews</a></li>
         </ul>
@@ -110,14 +114,15 @@ if(isset($_GET['command']) && isset($_GET['product_id']) && $_GET['command'] == 
     <?php $row = $prodStatement->fetch()?>
         <?php $productName = $row['product_name']; $cloth_type = $row['cloth_type']; $description= $row['description']; $color = $row['color'];
             $price = $row['price']; $category = $row['category']; ?>
-        <?php if(isset($_GET['command']) && isset($_GET['product_id']) && $_GET['command'] == 'delete') : unlink("images/happy_pink/$category/$productName"); endif?>
+        <?php if(isset($_GET['command']) && isset($_GET['product_id']) && $_GET['command'] == 'delete') : unlink("images/happy_pink/$productName"); endif?>
         
-        <div class="product">
+        <div class="product-single">
             <h1><?= substr($productName, 0, strpos($productName, '.')) ?></h1>
-            <img src="images/happy_pink/men/<?=$productName?>" alt="<?=$productName?>">
+            <img src="images/happy_pink/<?=$productName?>" alt="<?=$productName?>">
             <div id="details">
                 <p>Price: $<?=$price?></p>
                 <p>Color: <?=$color?></p>
+                <p>Clothing Type: <?=$cloth_type?></p>
             </div>
             <p>Details:</p>
             <p style="margin: 5px 0px 0px 40px;"><?=$description?>...</p>
@@ -128,17 +133,22 @@ if(isset($_GET['command']) && isset($_GET['product_id']) && $_GET['command'] == 
                 <h3>Edit Product</h3>
                 <label for="category">Category:</label>
                     <select name="category">
-                        <option value="men">Men</option>
-                        <option value="women">Women</option>
-                        <option value="kids">kids</option>
-                        <option value="custom">custom</option>
+                        <?php $statementCat->execute(); while($row = $statementCat->fetch()) : ?>
+                        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+                            <option value=<?=$name?> <?= ($name == $category  ? 'selected' : '')?>>
+                                <?=$display_name?>
+                            </option>
+                        <?php endwhile ?>
                     </select>
-                <input type="text" name="cloth_type" placeholder="Clothing Type">
-                <input type="text" name="color" placeholder="Product Color">
-                <input type="number" min="0" step="0.01" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" name="price" placeholder="Product Price">
-                <textarea rows="5" cols="40" name="description" spellcheck="true" placeholder="Description"></textarea>
-                <input type='submit' name='submit' value='Update Product'>
+                <input type="text" name="cloth_type" placeholder="Clothing Type" value=<?=$cloth_type?>>
+                <input type="text" name="color" placeholder="Product Color" value=<?=$color?>>
+                <input type="number" min="0" step="0.01" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" name="price" placeholder="Product Price" value=<?=$price?>>
+                <textarea rows="5" cols="40" name="description" spellcheck="true" placeholder="Description"><?=$description?></textarea>
+                <input type='submit' name='submit' value='Update Product' class="btn_log">
             </form>
+            <a href="index.php?category=<?=$category?>">  
+                <input type="submit" class="btn_log" value="Done"/>  
+            </a>
         </div>
 </body>
 </html>

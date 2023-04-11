@@ -11,6 +11,10 @@
 require('connect.php');
 session_start();
 
+$queryCat = 'SELECT * FROM categories';
+$statementCat = $db->prepare($queryCat);
+$statementCat->execute(); 
+
 if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Create Account'){
     $_SESSION['userType'] = $_POST['userType'];
     $_SESSION['form_user'] = $_POST['username'];
@@ -133,6 +137,7 @@ if (isset($_GET['command']) && $_GET['command'] == 'edit' && isset($_GET['userId
                 $statement->bindValue(":email", $email);
 
                 $statement->execute(); 
+                header("Refresh:0");
             }
             else{
                 $errors[] = 'Invalid email.';
@@ -199,10 +204,10 @@ if (isset($_GET['command']) && $_GET['command'] == 'delete' && isset($_GET['user
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="index.php?category=men">Men</a></li>
-        <li><a class="nav" href="index.php?category=women">Women</a></li>
-        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
-        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <?php while($row = $statementCat->fetch()) : ?>
+        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+            <li><a class="nav" href="index.php?category=<?=$name?>"><?=$display_name?></a></li>
+        <?php endwhile ?>
         <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
@@ -212,7 +217,7 @@ if (isset($_GET['command']) && $_GET['command'] == 'delete' && isset($_GET['user
                 <?php if ($_SESSION['user_type'] == 'Master') : ?>
                     <li><a href="manage_user.php">Users</a></li>
                 <?php endif ?>
-                <li><a href="#">Edit Navigation</a></li>
+                <li><a href="admin_nav.php">Edit Navigation</a></li>
                 <li><a href="#">Upload Images</a></li>
                 <li><a href="#">Moderate Reviews</a></li>
             </ul>
@@ -253,7 +258,7 @@ if (isset($_GET['command']) && $_GET['command'] == 'delete' && isset($_GET['user
                 </form>
             </div>
         <?php else : ?>
-            <div id="account-signin">
+            <div id="created">
                 <strong>Account Created!</strong>
                 <a href="manage_process.php?command=create&another=true">Create another Account?</a>
             </div>

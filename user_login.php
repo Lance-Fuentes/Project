@@ -11,10 +11,15 @@
 require('connect.php');
 session_start();
 
+$queryCat = 'SELECT * FROM categories';
+$statementCat = $db->prepare($queryCat);
+$statementCat->execute(); 
+
 $logged = false;
 
 if(isset($_SESSION['user_id'])){
     header('location: index.php');
+    exit();
 }
 
 if(isset($_POST['userCommand'])){
@@ -77,10 +82,10 @@ else if(isset($_POST['userCommand'])){
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="index.php?category=men">Men</a></li>
-        <li><a class="nav" href="index.php?category=women">Women</a></li>
-        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
-        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <?php while($row = $statementCat->fetch()) : ?>
+        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+            <li><a class="nav" href="index.php?category=<?=$name?>"><?=$display_name?></a></li>
+        <?php endwhile ?>
         <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 

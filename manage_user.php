@@ -11,6 +11,10 @@
 require('connect.php');
 session_start();
 
+$queryCat = 'SELECT * FROM categories';
+$statementCat = $db->prepare($queryCat);
+$statementCat->execute(); 
+
 if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 'Master'){
     header('location: index.php');
     exit();
@@ -52,10 +56,10 @@ $statement->execute();
 
     <ul class="main-nav">
         <li><a class="nav" href="index.php">Home</a></li>
-        <li><a class="nav" href="index.php?category=men">Men</a></li>
-        <li><a class="nav" href="index.php?category=women">Women</a></li>
-        <li><a class="nav" href="index.php?category=kids">Kids</a></li>
-        <li><a class="nav" href="index.php?category=custom">Custom</a></li>
+        <?php while($row = $statementCat->fetch()) : ?>
+        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+            <li><a class="nav" href="index.php?category=<?=$name?>"><?=$display_name?></a></li>
+        <?php endwhile ?>
         <li><a class="nav" href="index.php?category=about">About</a></li>
     </ul>
 
@@ -65,7 +69,7 @@ $statement->execute();
             <?php if($_SESSION['user_type'] == 'Master') : ?>
                 <li><a href="manage_user.php">Users</a></li> 
             <?php endif?>
-            <li><a href="#">Edit Navigation</a></li>
+            <li><a href="admin_nav.php">Edit Navigation</a></li>
             <li><a href="#">Upload Images</a></li>
             <li><a href="#">Moderate Reviews</a></li>
         </ul>

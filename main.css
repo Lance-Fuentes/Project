@@ -32,7 +32,7 @@ header h1{
     border: 1px groove black;
     font-size: 18px;    
     outline: none;
-    flex-grow: 1;
+    flex-grow: 2;
     color: #9B4922;
 }
 
@@ -98,7 +98,7 @@ li {
     text-underline-offset: 8px;
 }
 
-#account-signin {
+#created {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -106,7 +106,7 @@ li {
     text-align: center;
 }
   
-#account-signin strong {
+#created strong {
     display: block;
     font-size: 24px;
     font-weight: bold;
@@ -114,7 +114,7 @@ li {
     color: #764B36;
 }
   
-#account-signin a {
+#created a {
     font-size: 18px;
     margin-bottom: 50px;
     color: #9B4922;
@@ -223,10 +223,17 @@ li {
 .btn_log {
     color: #EFE7DD;;
     background-color: #764B36;
+    margin-top: 10px;
 }
 
 .btn_log:hover{
     background-color: #9B4922;
+}
+
+.cart-btn{
+    margin: 0 auto;
+    border-radius: 8px;
+    padding: 5px;
 }
 
 /* For manage_user */
@@ -318,6 +325,15 @@ h2 {
     flex-direction: column;
 }
 
+.product a {
+    text-decoration: none;
+}
+
+.product h1:hover {
+    text-decoration: underline;
+    color:#764B36 ;
+}
+
 .product h1 {
     font-size: 18px;
     margin-bottom: 10px;
@@ -331,6 +347,32 @@ h2 {
 }
 
 .product p {
+    margin-bottom: 5px;
+    color: #9B4922;
+}
+
+.product-single {
+    width: calc(33.33% - 20px);
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-single h1 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #764B36;
+}
+
+.product-single img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.product-single p {
     margin-bottom: 5px;
     color: #9B4922;
 }
@@ -362,4 +404,20 @@ h2 {
     margin-bottom: 20px;
     padding: 10px;
     border-radius: 5px;
+}
+
+.product-cud{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.product-cud a{
+    color:#9B4922;
+    text-decoration: none;
+}
+
+.product-cud a:hover {
+    text-decoration: underline;
+    color:#9B4922;
 }
