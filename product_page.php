@@ -28,6 +28,32 @@ if(isset($_GET['cloth_id'])){
     $revStatement = $db->prepare($revQuery);
     $revStatement->bindValue(':cloth_id', $cloth_id);
     $revStatement->execute();
+
+    if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Sort'){
+        $order = $_POST['sortRev'];
+
+        if($order == 'name'){
+            $sortQuery = 'name';
+        }
+        else if($order == 'nameDESC'){
+            $sortQuery = 'name DESC';
+        }
+        else if($order == 'created'){
+            $sortQuery = 'date_created';
+        }
+        else if($order == 'updated'){
+            $sortQuery = 'date_updated DESC';
+        }
+        else{
+            $sortQuery = 'id DESC';
+        }
+
+        $revQuery = "SELECT * FROM reviews WHERE cloth_id = :cloth_id ORDER BY $sortQuery";
+        $revStatement = $db->prepare($revQuery);
+        $revStatement->bindValue(':cloth_id', $cloth_id);
+        $revStatement->execute();
+    }
+
 }
 else{
     header('location:index.php');
@@ -111,6 +137,18 @@ else{
             <input type="submit" class="btn_log" value="Create Review"/>  
         </a>
     </div>
+
+    <form action="product_page.php?cloth_id=<?=$cloth_id?>" method="post">
+        <label for="sortRev">Sort Reviews:</label>
+        <select name="sortRev" id="sortRev">
+        <option value="default">Default</option>
+        <option value="name">Name Ascending</option>
+        <option value="nameDESC">Name Descending</option>
+        <option value="created">Date Created</option>
+        <option value="updated">Date Updated Descending</option>
+        </select>
+        <input type="submit" name="userCommand" class="btn_log" value="Sort">
+    </form>
 
     <?php while($row = $revStatement->fetch()): ?>
     <?php $name = $row['name']; $dateCreated = strtotime($row['date_created']); $dateUpdated= strtotime($row['date_updated']); $review = $row['review']; $userId = $row['user_id']; $id=$row['id']?>
