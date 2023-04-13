@@ -13,6 +13,11 @@ body {
     margin: 0 200px;
 }
 
+a{
+    color: #9B4922;
+    text-decoration: none;
+}
+
 header {
     display: flex;
     align-items: center;
@@ -264,7 +269,7 @@ h2{
     padding: 20px;
 }
 
-.edit h2 {
+.edit h2, h1 {
     color: #764B36;
     margin-bottom: 10px;
 }
@@ -421,3 +426,55 @@ h2 {
     text-decoration: underline;
     color:#9B4922;
 }
+
+/* For product_page.php */
+
+  #reviews {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #764B36;
+  }
+  
+  #reviews .reviewer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px;
+    padding: 16px;
+    margin: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 0;
+  }
+
+  #reviews .reviewer .dates {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dates p{
+    margin-top: 5px;
+    padding: 0;
+  }
+
+  .name{
+    margin: 0;
+  }
+
+  .content {
+    color: #9B4922;
+  }
+
+  .create-review{
+    display: flex;
+    justify-content: center;
+  }
+
+  textarea {
+    height: 10em;
+    width: 55em;
+}
+

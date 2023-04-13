@@ -132,7 +132,7 @@ function file_upload_path($original_filename) {
         <?php $name = $row['name']; $display_name = $row['display_name'];?>
             <li><a class="nav" href="index.php?category=<?=$name?>"><?=$display_name?></a></li>
         <?php endwhile ?>
-        <li><a class="nav" href="index.php?category=about">About</a></li>
+        <li><a class="nav" href="index.php?about=true">About</a></li>
     </ul>
 
     <?php if(isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 'Master' || $_SESSION['user_type'] == 'Admin')) :?>
@@ -155,50 +155,49 @@ function file_upload_path($original_filename) {
     </div>
     <?php endif ?>
 
-    <?php if(!isset($_GET['category'])) : ?>
+    <?php if(!isset($_GET['category']) && !isset($_GET['about'])) : ?>
         <div id="home-content">
             <img src="images/happy_pink/model1.png" alt="Brown jacket model">
             <img src="images/happy_pink/model2.png" alt="White shirt model">
         </div>
     <?php endif ?>
 
+    <?php if(isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 'Master' || $_SESSION['user_type'] == 'Admin') && isset($_GET['category'])) :?>
+        <div id="add-product">
+            <form method='post' enctype='multipart/form-data'>
+                <h3>Add New Product</h3>
+                <label for='image'>Upload Image:</label>
+                <input type='file' name='image' id='image'>
+                <?php if ($upload_error_detected): ?>
+                <p style="color: red;">Error occured while uploading image; Please make sure you are uploading correctly.</p>
+                <?php endif ?>
+                <?php if (isset($exists) && $exists): ?>
+                <p style="color: red;">Image filename exists; Please upload a new image.</p>
+                <?php endif ?>
+                <label for="category">Category:</label>
+                    <select name="category">
+                        <?php $statementCat->execute(); while($row = $statementCat->fetch()) : ?>
+                        <?php $name = $row['name']; $display_name = $row['display_name'];?>
+                            <option value=<?=$name?>><?=$display_name?></option>
+                        <?php endwhile ?>
+                    </select>
+                <input type="text" name="cloth_type" placeholder="Clothing Type">
+                <input type="text" name="color" placeholder="Product Color">
+                <input type="number" min="0" step="0.01" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" name="price" placeholder="Product Price">
+                <textarea rows="5" cols="40" name="description" spellcheck="true" placeholder="Description"></textarea>
+                <input type='submit' name='submit' value='Upload Product' class="btn_log">
+            </form>
+        </div>
+    <?php endif ?>
+
     <?php if(isset($_GET['category']) && $_GET['category'] == 'men') : ?>
-
-        <?php if(isset($_SESSION['user_type']) && ($_SESSION['user_type'] == 'Master' || $_SESSION['user_type'] == 'Admin')) :?>
-            <div id="add-product">
-                <form method='post' enctype='multipart/form-data'>
-                    <h3>Add New Product</h3>
-                    <label for='image'>Upload Image:</label>
-                    <input type='file' name='image' id='image'>
-                    <?php if ($upload_error_detected): ?>
-                    <p style="color: red;">Error occured while uploading image; Please make sure you are uploading correctly.</p>
-                    <?php endif ?>
-                    <?php if (isset($exists) && $exists): ?>
-                    <p style="color: red;">Image filename exists; Please upload a new image.</p>
-                    <?php endif ?>
-                    <label for="category">Category:</label>
-                        <select name="category">
-                            <?php $statementCat->execute(); while($row = $statementCat->fetch()) : ?>
-                            <?php $name = $row['name']; $display_name = $row['display_name'];?>
-                                <option value=<?=$name?>><?=$display_name?></option>
-                            <?php endwhile ?>
-                        </select>
-                    <input type="text" name="cloth_type" placeholder="Clothing Type">
-                    <input type="text" name="color" placeholder="Product Color">
-                    <input type="number" min="0" step="0.01" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" name="price" placeholder="Product Price">
-                    <textarea rows="5" cols="40" name="description" spellcheck="true" placeholder="Description"></textarea>
-                    <input type='submit' name='submit' value='Upload Product' class="btn_log">
-                </form>
-            </div>
-        <?php endif ?>
-
         <div class="category-content">
         <?php while($row = $statement->fetch()) : ?>
                 <?php $productName = $row['product_name']; $cloth_type = $row['cloth_type']; $description= $row['description']; $color = $row['color'];
                     $price = $row['price']; $category = $row['category']; $clothId = $row['cloth_id']?>
 
                 <div class="product">
-                    <a href="product_page.php?id=<?=$clothId?>">
+                    <a href="product_page.php?cloth_id=<?=$clothId?>">
                         <h1><?= substr($productName, 0, strpos($productName, '.')) ?></h1>
                         <img src="images/happy_pink/<?=$productName?>" alt="<?=$productName?>">
                     </a>
