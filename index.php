@@ -52,9 +52,23 @@ if(isset($_GET['category']) && $_GET['category'] == 'men'){
 if(isset($_GET['category']) && $_GET['category'] == 'search'){
     $searchItem = trim(filter_input(INPUT_POST, 'search-item', FILTER_SANITIZE_SPECIAL_CHARS));
     $searchTerm = '%'.$searchItem.'%';
-    $query = "SELECT * FROM products WHERE product_name LIKE :search OR cloth_type LIKE :search OR color LIKE :search ORDER BY cloth_id DESC";
+    $filter = filter_input(INPUT_POST, 'filter', FILTER_SANITIZE_SPECIAL_CHARS);
+
+    $_SESSION['searchItem'] = $searchItem;
+
+    $query = "SELECT * FROM products WHERE (product_name LIKE :search OR cloth_type LIKE :search OR color LIKE :search)";
+
+    if($filter != 'none'){
+        $query .= " AND category = :searchCat";
+        $_SESSION['option'] = $filter;
+    }
+
+    $query .= " ORDER BY cloth_id DESC";
     $statement = $db->prepare($query);
     $statement->bindValue(':search', $searchTerm);
+    if($filter != 'none'){
+        $statement->bindValue(':searchCat', $filter);
+    }
     $statement->execute(); 
 }
 
@@ -142,8 +156,19 @@ function file_upload_path($original_filename) {
     <header>
 		<a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
         <form id="search-form" action="index.php?category=search" method="post">
-            <input type="text" id="search-bar" name="search-item" placeholder="Search for products">
+            <input type="text" id="search-bar" name="search-item" placeholder="Search for products" value=<?= (isset($_SESSION['searchItem']) ? $_SESSION['searchItem'] : '') ?>>
             <input type="submit" name="userCommand" class="btn_log" value="Search">
+            <label for="filter">Filter Search:</label>
+            <select name="filter" id="filter">
+            <option value="none">None</option>
+            <?php $querySearchCat = 'SELECT * FROM categories';
+                    $statementSearchCat = $db->prepare($querySearchCat);
+                    $statementSearchCat->execute(); 
+                    while($row = $statementSearchCat->fetch()):
+                    $name = $row['name']; $display_name = $row['display_name'];?>
+                    <option value=<?=$name?> <?= (isset($_SESSION['option']) && $_SESSION['option'] == $name? 'selected' : '') ?>><?=$display_name?></option>
+                    <?php endwhile ?>
+            </select>
         </form>
 		
 		<div id="user-links">
