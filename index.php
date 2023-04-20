@@ -19,9 +19,11 @@ $queryCat = 'SELECT * FROM categories';
 $statementCat = $db->prepare($queryCat);
 $statementCat->execute(); 
 
-if(isset($_GET['category']) && $_GET['category'] == 'men'){
-    $query = 'SELECT * FROM products WHERE category = "men" ORDER BY cloth_id DESC';
+if(isset($_GET['category'])){
+    $category = $_GET['category'];
+    $query = "SELECT * FROM products WHERE category = :category ORDER BY cloth_id DESC";
     $statement = $db->prepare($query);
+    $statement->bindValue(':category', $category);
     $statement->execute(); 
 
     if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Sort'){
@@ -61,6 +63,9 @@ if(isset($_GET['category']) && $_GET['category'] == 'search'){
     if($filter != 'none'){
         $query .= " AND category = :searchCat";
         $_SESSION['option'] = $filter;
+    }
+    else{
+        unset($_SESSION["option"]);
     }
 
     $query .= " ORDER BY cloth_id DESC";
@@ -160,7 +165,7 @@ function file_upload_path($original_filename) {
             <input type="submit" name="userCommand" class="btn_log" value="Search">
             <label for="filter">Filter Search:</label>
             <select name="filter" id="filter">
-            <option value="none">None</option>
+            <option value="none" selected>None</option>
             <?php $querySearchCat = 'SELECT * FROM categories';
                     $statementSearchCat = $db->prepare($querySearchCat);
                     $statementSearchCat->execute(); 
@@ -208,7 +213,7 @@ function file_upload_path($original_filename) {
     <?php endif ?>
 
     <?php if(!isset($_SESSION['user_id'])) :?>
-    <div id="account-signin">
+    <div id="account-signup">
         <strong>Shop and customize the products you love</strong>
         <a href="user_login.php">Sign In or Create An Account</a>
     </div>
@@ -263,7 +268,7 @@ function file_upload_path($original_filename) {
     </form>
     <?php endif ?>
 
-    <?php if(isset($_GET['category']) && $_GET['category'] == 'men') : ?>
+    <?php if(isset($_GET['category'])) : ?>
         <div class="category-content">
         <?php while($row = $statement->fetch()) : ?>
                 <?php $productName = $row['product_name']; $cloth_type = $row['cloth_type']; $description= $row['description']; $color = $row['color'];
@@ -285,7 +290,7 @@ function file_upload_path($original_filename) {
                         </a>
                     </div>
                     <div class="product-cud">
-                        <p><a href="product_edit.php?category=men&product_id=<?=$row['cloth_id']?>">Edit</a></p>
+                        <p><a href="product_edit.php?category=<?=$category?>&product_id=<?=$row['cloth_id']?>">Edit</a></p>
                         <p><a href="product_edit.php?command=delete&category=<?=$category?>&product_id=<?=$row['cloth_id']?>" onclick="return confirm('Are you sure you wish to delete this post?')">Delete Product</a></p>
                     </div>
                     <p>Details:</p>

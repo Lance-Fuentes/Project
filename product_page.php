@@ -76,7 +76,22 @@ else{
 <body>
 <header>
 		<a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
-		<input type="text" id="search-bar" placeholder="Search for products">
+        <form id="search-form" action="index.php?category=search" method="post">
+            <input type="text" id="search-bar" name="search-item" placeholder="Search for products" value=<?= (isset($_SESSION['searchItem']) ? $_SESSION['searchItem'] : '') ?>>
+            <input type="submit" name="userCommand" class="btn_log" value="Search">
+            <label for="filter">Filter Search:</label>
+            <select name="filter" id="filter">
+            <option value="none">None</option>
+            <?php $querySearchCat = 'SELECT * FROM categories';
+                    $statementSearchCat = $db->prepare($querySearchCat);
+                    $statementSearchCat->execute(); 
+                    while($row = $statementSearchCat->fetch()):
+                    $name = $row['name']; $display_name = $row['display_name'];?>
+                    <option value=<?=$name?> <?= (isset($_SESSION['option']) && $_SESSION['option'] == $name? 'selected' : '') ?>><?=$display_name?></option>
+                    <?php endwhile ?>
+            </select>
+        </form>
+		
 		<div id="user-links">
 
             <?php if(isset($_SESSION['user_id'])) :?>
