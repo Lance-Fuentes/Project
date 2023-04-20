@@ -20,8 +20,41 @@ $statementCat = $db->prepare($queryCat);
 $statementCat->execute(); 
 
 if(isset($_GET['category']) && $_GET['category'] == 'men'){
-    $query = 'SELECT * FROM products WHERE category = "men" ORDER BY cloth_id';
+    $query = 'SELECT * FROM products WHERE category = "men" ORDER BY cloth_id DESC';
     $statement = $db->prepare($query);
+    $statement->execute(); 
+
+    if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Sort'){
+        $order = $_POST['sortCat'];
+
+        if($order == 'name'){
+            $sortQuery = 'product_name';
+        }
+        else if($order == 'nameDESC'){
+            $sortQuery = 'product_name DESC';
+        }
+        else if($order == 'price'){
+            $sortQuery = 'price';
+        }
+        else if($order == 'priceDESC'){
+            $sortQuery = 'price DESC';
+        }
+        else{
+            $sortQuery = 'cloth_id DESC';
+        }
+
+        $query = 'SELECT * FROM products WHERE category = "men" ORDER BY ' .$sortQuery;
+        $statement = $db->prepare($query);
+        $statement->execute(); 
+    }
+}
+
+if(isset($_GET['category']) && $_GET['category'] == 'search'){
+    $searchItem = trim(filter_input(INPUT_POST, 'search-item', FILTER_SANITIZE_SPECIAL_CHARS));
+    $searchTerm = '%'.$searchItem.'%';
+    $query = "SELECT * FROM products WHERE product_name LIKE :search OR cloth_type LIKE :search OR color LIKE :search ORDER BY cloth_id DESC";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':search', $searchTerm);
     $statement->execute(); 
 }
 
@@ -108,8 +141,9 @@ function file_upload_path($original_filename) {
 <body>
     <header>
 		<a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
-        <form id="search-form" action="search.php" method="post">
-            <input type="text" id="search-bar" placeholder="Search for products">
+        <form id="search-form" action="index.php?category=search" method="post">
+            <input type="text" id="search-bar" name="search-item" placeholder="Search for products">
+            <input type="submit" name="userCommand" class="btn_log" value="Search">
         </form>
 		
 		<div id="user-links">
@@ -190,7 +224,53 @@ function file_upload_path($original_filename) {
         </div>
     <?php endif ?>
 
+    <?php if(isset($_GET['category'])): ?>
+    <form action="index.php?category=<?=$_GET['category']?>" method="post">
+        <label for="sortCat">Sort Category:</label>
+        <select name="sortCat" id="sortCat">
+        <option value="default">Default</option>
+        <option value="name">Name Ascending</option>
+        <option value="nameDESC">Name Descending</option>
+        <option value="price">Price</option>
+        <option value="priceDESC">Price Descending</option>
+        </select>
+        <input type="submit" name="userCommand" class="btn_log" value="Sort">
+    </form>
+    <?php endif ?>
+
     <?php if(isset($_GET['category']) && $_GET['category'] == 'men') : ?>
+        <div class="category-content">
+        <?php while($row = $statement->fetch()) : ?>
+                <?php $productName = $row['product_name']; $cloth_type = $row['cloth_type']; $description= $row['description']; $color = $row['color'];
+                    $price = $row['price']; $category = $row['category']; $clothId = $row['cloth_id']?>
+
+                <div class="product">
+                    <a href="product_page.php?cloth_id=<?=$clothId?>">
+                        <h1><?= substr($productName, 0, strpos($productName, '.')) ?></h1>
+                        <img src="images/happy_pink/<?=$productName?>" alt="<?=$productName?>">
+                    </a>
+                    <div id="details">
+                        <p>Price: $<?=$price?></p>
+                        <p>Color: <?=$color?></p>
+                        <p>Clothing Type: <?=$cloth_type?></p>
+                    </div>
+                    <div class="cart-btn">
+                        <a href="#">
+                            <input type="submit" class="btn_log" value="Add To Cart"/>  
+                        </a>
+                    </div>
+                    <div class="product-cud">
+                        <p><a href="product_edit.php?category=men&product_id=<?=$row['cloth_id']?>">Edit</a></p>
+                        <p><a href="product_edit.php?command=delete&category=<?=$category?>&product_id=<?=$row['cloth_id']?>" onclick="return confirm('Are you sure you wish to delete this post?')">Delete Product</a></p>
+                    </div>
+                    <p>Details:</p>
+                    <p style="margin: 5px 0px 0px 40px;"><?=$description?>...</p>
+                </div>
+        <?php endwhile ?>
+        </div>
+    <?php endif ?>
+
+    <?php if(isset($_GET['category']) && $_GET['category'] == 'search') : ?>
         <div class="category-content">
         <?php while($row = $statement->fetch()) : ?>
                 <?php $productName = $row['product_name']; $cloth_type = $row['cloth_type']; $description= $row['description']; $color = $row['color'];
