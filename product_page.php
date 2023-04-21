@@ -68,8 +68,18 @@ $images = array(
   $captcha_image = array_rand($images);
 
 if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Submit Captcha'){
+    if(isset($_SESSION['captureCaptcha'])){
+        $_SESSION['captureCaptcha'];
+    }
+    else{
+        $_SESSION['captureCaptcha'] = $captcha_image;
+    }
+
     if(!empty($_POST['captcha']) && $_POST['captcha'] == $images[$captcha_image]){
         $_SESSION['person'] = true;
+    }
+    else{
+        $_SESSION['userCaptchaText'] = $_POST['captcha'];
     }
 }
 
@@ -160,11 +170,11 @@ if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Submit Captcha'){
 
     <h1 class="edit">Product Reviews</h1>
     
-    <?php if(!isset($_SESSION['person'])) :?>
-    <img src="<?= $captcha_image ?>" alt="Captcha">
+    <?php if((isset($_SESSION['person']) || isset($_SESSION['user_id'])) === false) :?>
+    <img src="<?= isset($_SESSION['captureCaptcha']) ? $_SESSION['captureCaptcha'] : $captcha_image ?>" alt="Captcha">
 
     <form action="product_page.php?cloth_id=<?=$_GET['cloth_id']?>" method="post">
-        <input type="text" name="captcha" id="captcha" placeholder="Enter text to create review">
+        <input type="text" name="captcha" id="captcha" placeholder="Enter text to create review" value="<?=isset($_SESSION['userCaptchaText']) ? $_SESSION['userCaptchaText'] : ""?>">
         <input type="submit" class="btn_log" name="userCommand" value="Submit Captcha">
     </form>
     <?php endif ?>
