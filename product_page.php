@@ -171,19 +171,22 @@ if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Submit Captcha'){
     <h1 class="edit">Product Reviews</h1>
     
     <?php if((isset($_SESSION['person']) || isset($_SESSION['user_id'])) === false) :?>
-    <img src="<?= isset($_SESSION['captureCaptcha']) ? $_SESSION['captureCaptcha'] : $captcha_image ?>" alt="Captcha">
-
-    <form action="product_page.php?cloth_id=<?=$_GET['cloth_id']?>" method="post">
-        <input type="text" name="captcha" id="captcha" placeholder="Enter text to create review" value="<?=isset($_SESSION['userCaptchaText']) ? $_SESSION['userCaptchaText'] : ""?>">
-        <input type="submit" class="btn_log" name="userCommand" value="Submit Captcha">
-    </form>
+        <div class="captcha-form">
+            <img src="<?= isset($_SESSION['captureCaptcha']) ? $_SESSION['captureCaptcha'] : $captcha_image ?>" alt="Captcha">
+            <form action="product_page.php?cloth_id=<?=$_GET['cloth_id']?>" method="post" class="form-cap">
+                <input type="text" name="captcha" id="captcha" placeholder="Enter text to create review" value="<?=isset($_SESSION['userCaptchaText']) ? $_SESSION['userCaptchaText'] : ""?>">
+                <input type="submit" class="btn_log" name="userCommand" value="Submit Captcha">
+            </form>
+        </div>
     <?php endif ?>
 
-    <div class="cart-btn">
-        <a class="create-review" href="review_process.php?command=create&cloth_id=<?=$cloth_id?>">
-            <input type="submit" class="btn_log" value="Create Review"/>  
-        </a>
-    </div>
+    <?php if(isset($_SESSION['person']) || isset($_SESSION['user_id'])) :?>
+        <div class="cart-btn">
+            <a class="create-review" href="review_process.php?command=create&cloth_id=<?=$cloth_id?>">
+                <input type="submit" class="btn_log" value="Create Review"/>  
+            </a>
+        </div>
+    <?php endif ?>
 
     <form action="product_page.php?cloth_id=<?=$cloth_id?>" method="post">
         <label for="sortRev">Sort Reviews:</label>
