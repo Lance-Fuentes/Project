@@ -3,7 +3,7 @@
 /*******w********
     
     Name: Lance Fuentes
-    Date: March 24, 2023
+    Date: April 21, 2023
     Description: Manage reviews in the database.
 
 ****************/
@@ -20,7 +20,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 'Master'){
     exit();
 }
 
-$query = 'SELECT * FROM users ORDER BY user_id';
+$query = 'SELECT * FROM reviews ORDER BY id';
 $statement = $db->prepare($query);
 $statement->execute(); 
 
@@ -91,29 +91,32 @@ $statement->execute();
     </div>
     <?php endif ?>
 
-    <h2><a href="manage_process.php?command=create">Create A New User</a></h2>
-
     <?php if ($statement->rowCount() > 0) : ?>
         <table class="dbs-table">
             <tr>
                 <th>Edit</th>
                 <th>Delete</th>
+                <th>Name</th>
+                <th>Cloth ID</th>
                 <th>User ID</th>
-                <th>User Type</th>
-                <th>Display Name</th>
-                <th>Email</th>
+                <th>Date Created</th>
+                <th>Date Updated</th>
+                <th>Review</th>
             </tr>
 
             <?php while($row = $statement->fetch()) : ?>
-                <?php $userId = $row['user_id']; $userType = $row['user_type']; $displayName = $row['display_name']; $email = $row['email']; ?>
+                <?php $name= $row['name']; $clothId = $row['cloth_id']; $userId = $row['user_id']; $created = $row['date_created']; 
+                    $updated = $row['date_updated']; $review = $row['review']; $ID = $row['id']?>
                 
                 <tr>
-                    <td><a href="manage_process.php?command=edit&userId=<?=$userId?>">Edit User</a></td>
-                    <td><a href="manage_process.php?command=delete&userId=<?=$userId?>" onclick="return confirm('Are you sure you wish to delete this user?')">Delete User</a></td>
+                    <td><a href="mod_reviews_process.php?command=edit&cloth_id=<?=$clothId?>&rev_id=<?=$ID?>">Edit Review</a></td>
+                    <td><a href="mod_reviews_process.php?command=delete&cloth_id=<?=$clothId?>&rev_id=<?=$ID?>" onclick="return confirm('Are you sure you wish to delete this review?')">Delete Review</a></td>
+                    <td><?= $name ?></td>
+                    <td><?= $clothId ?></td>
                     <td><?= $userId ?></td>
-                    <td><?= $userType ?></td>
-                    <td><?= $displayName ?></td>
-                    <td><?= $email ?></td>
+                    <td><?= $created ?></td>
+                    <td><?= $updated ?></td>
+                    <td><?= $review ?></td>
                 </tr>
             <?php endwhile ?>
         </table>
