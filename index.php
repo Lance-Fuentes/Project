@@ -69,6 +69,7 @@ if(isset($_GET['category']) && $_GET['category'] == 'search'){
     }
 
     $query .= " ORDER BY cloth_id DESC";
+
     $statement = $db->prepare($query);
     $statement->bindValue(':search', $searchTerm);
     if($filter != 'none'){
@@ -330,6 +331,7 @@ function file_upload_path($original_filename) {
                 </div>
         <?php endwhile ?>
         </div>
+
     <?php endif ?>
 </body>
 </html>

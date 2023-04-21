@@ -60,6 +60,19 @@ else{
     exit();
 }
 
+$images = array(
+    "images/Captcha/Cap1.png" => "ABFE", 
+    "images/Captcha/Cap2.png" => "UVQS", 
+    "images/Captcha/Cap3.png" => "DSPRA"
+  ); 
+  $captcha_image = array_rand($images);
+
+if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Submit Captcha'){
+    if(!empty($_POST['captcha']) && $_POST['captcha'] == $images[$captcha_image]){
+        $_SESSION['person'] = true;
+    }
+}
+
 
 
 ?>
@@ -147,6 +160,15 @@ else{
 
     <h1 class="edit">Product Reviews</h1>
     
+    <?php if(!isset($_SESSION['person'])) :?>
+    <img src="<?= $captcha_image ?>" alt="Captcha">
+
+    <form action="product_page.php?cloth_id=<?=$_GET['cloth_id']?>" method="post">
+        <input type="text" name="captcha" id="captcha" placeholder="Enter text to create review">
+        <input type="submit" class="btn_log" name="userCommand" value="Submit Captcha">
+    </form>
+    <?php endif ?>
+
     <div class="cart-btn">
         <a class="create-review" href="review_process.php?command=create&cloth_id=<?=$cloth_id?>">
             <input type="submit" class="btn_log" value="Create Review"/>  

@@ -11,11 +11,6 @@
 require('connect.php');
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header('location: index.php');
-    exit();
-}
-
 $created = false;
 
 $queryCat = 'SELECT * FROM categories';
@@ -30,9 +25,14 @@ if(isset($_GET['cloth_id'])){
     $cloth_id = $_GET['cloth_id'];
 }
 
+if (!isset($_SESSION['user_id']) && !$_SESSION['person']) {
+    header('location: index.php');
+    exit();
+}
+
 date_default_timezone_set('Canada/Central');
 
-if ($_GET['command'] == 'create') {
+if ($_GET['command'] == 'create' && isset($_SESSION['user_id'])) {
     if (isset($_POST['userCommand']) && isset($_POST['content']) && $_POST['userCommand'] == "Create Review" && !empty($_POST['content']) && strlen($_POST['content']) <= 600) {
 
     $content = trim(filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS));
@@ -40,6 +40,38 @@ if ($_GET['command'] == 'create') {
     $createdDate = new DateTime('now');
     $updatedDate = new DateTime('now');
     $user_id = $_SESSION['user_id'];
+    $review = $content;
+
+    $query = "INSERT INTO reviews (name, date_created, date_updated, user_id, cloth_id, review) VALUES (:name, :date_created, :date_updated, :user_id, :cloth_id, :review)";
+    $statement = $db->prepare(($query));
+    
+    $statement->bindValue(":name", $name);
+    $statement->bindValue(":date_created", $createdDate->format('Y-m-d H:i:s'));
+    $statement->bindValue(":date_updated", $updatedDate->format('Y-m-d H:i:s'));   
+    $statement->bindValue(":user_id", $user_id);
+    $statement->bindValue(":cloth_id", $cloth_id);
+    $statement->bindValue(":review", $review);
+
+    $statement->execute();
+
+    $created = true;
+    header("Location: product_page.php?cloth_id=$cloth_id");
+    exit();
+     
+    }
+    else if(isset($_POST['userCommand'])){
+        $errors[] = 'Review can not be empty or more than 600 characters.';
+    }
+}
+
+if ($_GET['command'] == 'create') {
+    if (isset($_POST['userCommand']) && isset($_POST['content']) && $_POST['userCommand'] == "Create Review" && !empty($_POST['content']) && strlen($_POST['content']) <= 600) {
+
+    $content = trim(filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS));
+    $name = 'Guest';
+    $createdDate = new DateTime('now');
+    $updatedDate = new DateTime('now');
+    $user_id = NULL;
     $review = $content;
 
     $query = "INSERT INTO reviews (name, date_created, date_updated, user_id, cloth_id, review) VALUES (:name, :date_created, :date_updated, :user_id, :cloth_id, :review)";
