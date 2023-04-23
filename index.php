@@ -162,7 +162,7 @@ function file_upload_path($original_filename) {
     <header>
 		<a style="text-decoration:none" href="index.php"><h1>Happy Pink</h1></a>
         <form id="search-form" action="index.php?category=search" method="post">
-            <input type="text" id="search-bar" name="search-item" placeholder="Search for products" value=<?= (isset($_SESSION['searchItem']) ? $_SESSION['searchItem'] : '') ?>>
+            <input type="text" id="search-bar" name="search-item" placeholder="Search for products" <?= (isset($_SESSION['searchItem']) ? 'value="' .$_SESSION['searchItem'] . '"' : '') ?>>
             <input type="submit" name="userCommand" class="btn_log" value="Search">
             <label for="filter">Filter Search:</label>
             <select name="filter" id="filter">
