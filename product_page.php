@@ -65,17 +65,12 @@ $images = array(
     "images/Captcha/Cap2.png" => "UVQS", 
     "images/Captcha/Cap3.png" => "DSPRA"
   ); 
-  $captcha_image = array_rand($images);
+  if(!isset($_SESSION['captcha_image'])){
+    $_SESSION['captcha_image'] = array_rand($images);
+  }
 
 if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Submit Captcha'){
-    if(isset($_SESSION['captureCaptcha'])){
-        $_SESSION['captureCaptcha'];
-    }
-    else{
-        $_SESSION['captureCaptcha'] = $captcha_image;
-    }
-
-    if(!empty($_POST['captcha']) && $_POST['captcha'] == $images[$captcha_image]){
+    if(!empty($_POST['captcha']) && $_POST['captcha'] == $images[$_SESSION['captcha_image']]){
         $_SESSION['person'] = true;
     }
     else{
@@ -172,7 +167,7 @@ if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Submit Captcha'){
     
     <?php if((isset($_SESSION['person']) || isset($_SESSION['user_id'])) === false) :?>
         <div class="captcha-form">
-            <img src="<?= isset($_SESSION['captureCaptcha']) ? $_SESSION['captureCaptcha'] : $captcha_image ?>" alt="Captcha">
+            <img src="<?= $_SESSION['captcha_image'] ?>" alt="Captcha">
             <form action="product_page.php?cloth_id=<?=$_GET['cloth_id']?>" method="post" class="form-cap">
                 <input type="text" name="captcha" id="captcha" placeholder="Enter text to create review" value="<?=isset($_SESSION['userCaptchaText']) ? $_SESSION['userCaptchaText'] : ""?>">
                 <input type="submit" class="btn_log" name="userCommand" value="Submit Captcha">
