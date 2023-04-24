@@ -95,7 +95,6 @@ $statement->execute();
         <table class="dbs-table">
             <tr>
                 <th>Edit</th>
-                <th>Delete</th>
                 <th>Name</th>
                 <th>Cloth ID</th>
                 <th>User ID</th>
@@ -110,7 +109,6 @@ $statement->execute();
                 
                 <tr>
                     <td><a href="mod_reviews_process.php?command=edit&cloth_id=<?=$clothId?>&rev_id=<?=$ID?>">Edit Review</a></td>
-                    <td><a href="mod_reviews_process.php?command=delete&cloth_id=<?=$clothId?>&rev_id=<?=$ID?>" onclick="return confirm('Are you sure you wish to delete this review?')">Delete Review</a></td>
                     <td><?= $name ?></td>
                     <td><?= $clothId ?></td>
                     <td><?= $userId ?></td>

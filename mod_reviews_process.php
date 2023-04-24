@@ -21,8 +21,9 @@ if(!isset($_SESSION['user_type']) && ($_SESSION['user_type'] != 'Master' || $_SE
     exit();
 }
 
-$cloth_id = $_GET['cloth_id'];
-
+if(isset($_GET['cloth_id'])){
+    $cloth_id = $_GET['cloth_id'];
+}
 
 if (isset($_GET['command']) && $_GET['command'] == 'edit' && isset($_GET['rev_id'])){
     $rev_id = $_GET['rev_id'];
@@ -43,7 +44,7 @@ if (isset($_GET['command']) && $_GET['command'] == 'edit' && isset($_GET['rev_id
             $statement->bindValue(":dateUpdated", $updatedDate->format('Y-m-d H:i:s'));  
             $statement->execute();
             
-            header("Location: product_page.php?cloth_id=" . urlencode($cloth_id));
+            header("Location: product_page.php?cloth_id=$cloth_id");
             exit();
     }
 }
@@ -54,7 +55,7 @@ if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'delete' && isset($_
     $statement = $db->prepare($query);
     $statement->execute();
 
-    header("Location: product_page.php?cloth_id=" . urlencode($cloth_id));
+    header("Location: product_page.php?cloth_id=$cloth_id");
     exit();
 }
 
@@ -137,7 +138,7 @@ if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'delete' && isset($_
                 <?php endif ?>
 
                 <?php $revRow = $revStatement->fetch(); $content = $revRow['review']; $rev_id = $revRow['id']; $cloth_id = $revRow['cloth_id'];?>
-            <form action=<?= "mod_reviews_process.php?command=edit&$cloth_id&rev_id=$rev_id" ?> method="post">
+            <form action=<?= "mod_reviews_process.php?command=edit&cloth_id=$cloth_id&rev_id=$rev_id" ?> method="post">
                 <textarea placeholder="Write a review..." name="content"><?=$content?></textarea>
                 <input type="submit" name="userCommand" class="btn_log" value="Update Review">
                 <input type='submit' name='userCommand' value='delete' class="btn_log"  onclick="return confirm('Are you sure you wish to delete this review?')">
