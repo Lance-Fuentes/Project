@@ -141,7 +141,7 @@ if(isset($_POST['userCommand']) && $_POST['userCommand'] == 'Submit Captcha'){
             <?php endif?>
             <li><a href="admin_nav.php">Edit Navigation</a></li>
             <li><a href="#">Upload Images</a></li>
-            <li><a href="#">Moderate Reviews</a></li>
+            <li><a href="mod_reviews.php">Moderate Reviews</a></li>
         </ul>
     </div>
     <?php endif ?>
